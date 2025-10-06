@@ -54,16 +54,55 @@
             left: auto;
             top: 70px;
         }
+
+        /* Attribute panel */
+        #attribute-panel {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            width: 300px;
+            height: 200px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 13px;
+            display: none; /* hidden until a feature is clicked */
+            z-index: 9999;
+        }
+
+        /* Toggle button for layer panel */
+        #toggle-layers {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10000;
+            background: #444;
+            color: white;
+            padding: 6px 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
     </style>
 
-    <title>OpenLayers Map with Layer Panel</title>
+    <title>OpenLayers Map with Layer & Attribute Panel</title>
 </head>
 <body>
+    <button id="toggle-layers">Toggle Layers</button>
+
     <div id="map">
         <div id="popup" class="ol-popup">
             <a href="#" id="popup-closer" class="ol-popup-closer"></a>
             <div id="popup-content"></div>
         </div>
+    </div>
+
+    <!-- Attribute panel -->
+    <div id="attribute-panel">
+        <b>Feature Info</b>
+        <hr>
+        <div id="attribute-content">Click on a feature to view details</div>
     </div>
 
     <!-- Required JS -->
@@ -99,18 +138,47 @@
     <script src="./resources/qgis2web.js"></script>
 
     <script>
-        // Wait for qgis2web map to load
         document.addEventListener("DOMContentLoaded", function() {
             // Create layer switcher
             var layerSwitcher = new ol.control.LayerSwitcher({
-                activationMode: 'click',  // expand on click
-                startActive: true,        // expanded by default
-                tipLabel: 'Layers',       // tooltip
-                groupSelectStyle: 'children' // checkbox style
+                activationMode: 'click',
+                startActive: true,
+                tipLabel: 'Layers',
+                groupSelectStyle: 'children'
+            });
+            map.addControl(layerSwitcher);
+
+            // Toggle button functionality
+            const toggleButton = document.getElementById("toggle-layers");
+            toggleButton.addEventListener("click", function() {
+                const ls = document.querySelector(".layer-switcher");
+                if (ls.style.display === "none") {
+                    ls.style.display = "block";
+                } else {
+                    ls.style.display = "none";
+                }
             });
 
-            // Add to map (map is created in qgis2web.js)
-            map.addControl(layerSwitcher);
+            // Feature info on click
+            map.on("singleclick", function(evt) {
+                document.getElementById("attribute-panel").style.display = "block";
+                const content = document.getElementById("attribute-content");
+                content.innerHTML = "No feature clicked";
+
+                map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+                    if (feature) {
+                        let props = feature.getProperties();
+                        let html = "<ul>";
+                        for (let key in props) {
+                            if (key !== "geometry") {
+                                html += "<li><b>" + key + ":</b> " + props[key] + "</li>";
+                            }
+                        }
+                        html += "</ul>";
+                        content.innerHTML = html;
+                    }
+                });
+            });
         });
     </script>
 </body>
