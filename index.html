@@ -1,4 +1,4 @@
-<!-- 🔹 Layer toggle buttons -->
+<!-- 🔹 Layer toggle buttons + Feature Info Panel -->
 <div id="layer-buttons" style="position: absolute; top: 10px; left: 10px; z-index: 1000; background: rgba(255,255,255,0.95); padding: 8px; border-radius: 4px; font-size: 13px; max-width: 250px;">
     <h4>Toggle Layers</h4>
     <button onclick="toggleLayer('buildings')">Buildings</button>
@@ -6,12 +6,10 @@
     <button onclick="toggleLayer('vegetation')">Vegetation</button>
     <button onclick="toggleLayer('waterbody')">Waterbody</button>
     <button onclick="toggleLayer('siteBoundary')">Site Boundary</button>
-</div>
 
-<!-- 🔹 Attribute panel (below layer buttons) -->
-<div id="attribute-panel" style="position: absolute; top: 200px; left: 10px; z-index: 1000; background: rgba(255,255,255,0.95); padding: 8px; border-radius: 4px; font-size: 12px; width: 250px; max-height: 300px; overflow-y: auto;">
-    <h4>Feature Attributes</h4>
-    <div id="feature-info">
+    <hr>
+    <h4>Feature Info</h4>
+    <div id="feature-info" style="max-height: 200px; overflow-y: auto; font-size: 12px;">
         <p>Click on a feature to see details</p>
     </div>
 </div>
@@ -41,14 +39,12 @@
         infoDiv.innerHTML = ''; // Clear previous info
 
         var pixel = evt.pixel;
-        var featureFound = false;
 
         map.forEachFeatureAtPixel(pixel, function(feature, layer) {
-            featureFound = true;
             var attributes = feature.getProperties();
             var table = '<table style="border-collapse: collapse; width: 100%;">';
             for (var key in attributes) {
-                if (key !== 'geometry') {  // skip geometry
+                if (key !== 'geometry') {
                     table += '<tr><td style="border: 1px solid #ccc; padding: 2px;">' + key + '</td>';
                     table += '<td style="border: 1px solid #ccc; padding: 2px;">' + attributes[key] + '</td></tr>';
                 }
@@ -57,7 +53,7 @@
             infoDiv.innerHTML += table;
         });
 
-        if (!featureFound) {
+        if (infoDiv.innerHTML === '') {
             infoDiv.innerHTML = '<p>No feature here</p>';
         }
     });
