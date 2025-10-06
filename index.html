@@ -34,7 +34,7 @@
             padding: 2px !important;
         } 
 
-        /* Layer switcher */
+        /* 🔹 Expanded Layer Switcher Style */
         .layer-switcher {
             max-height: 500px;
             overflow-y: auto;
@@ -44,10 +44,11 @@
             font-size: 13px;
         }
 
+        /* Position layer switcher on the right */
         .ol-control.ol-layerswitcher {
-            right: 320px; /* push left for attribute panel */
+            right: 10px;
             left: auto;
-            top: 70px;
+            top: 70px;  /* push below zoom controls */
         }
 
         html, body, #map {
@@ -57,7 +58,7 @@
             margin: 0;
         }
 
-        /* Left-side layer toggle buttons */
+        /* 🔹 Layer buttons */
         #layer-buttons {
             position: absolute;
             top: 10px;
@@ -80,45 +81,31 @@
             cursor: pointer;
         }
 
-        /* Right-side attribute panel */
+        /* 🔹 Attribute panel */
         #attribute-panel {
             position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
+            top: 200px;
+            left: 10px;
             z-index: 1000;
-            background: rgba(255,255,255,0.98);
-            padding: 12px;
-            border-left: 2px solid #ccc;
-            font-size: 13px;
-            width: 300px;
+            background: rgba(255,255,255,0.95);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            width: 250px;
+            max-height: 300px;
             overflow-y: auto;
         }
         #attribute-panel h4 {
-            margin: 0 0 8px 0;
-            font-size: 15px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        #attribute-panel button {
-            font-size: 12px;
-            padding: 2px 6px;
-            cursor: pointer;
+            margin: 0 0 5px 0;
+            font-size: 14px;
         }
         #feature-info table {
             border-collapse: collapse;
             width: 100%;
-            margin-top: 5px;
         }
-        #feature-info th, #feature-info td {
+        #feature-info td {
             border: 1px solid #ccc;
-            padding: 4px;
-            text-align: left;
-        }
-        #feature-info th {
-            background-color: #f0f0f0;
+            padding: 2px;
         }
     </style>
     <title>GIS Map</title>
@@ -131,7 +118,7 @@
         </div>
     </div>
 
-    <!-- Layer toggle buttons -->
+    <!-- 🔹 Layer toggle buttons -->
     <div id="layer-buttons">
         <h4>Toggle Layers</h4>
         <button onclick="toggleLayer('buildings')">Buildings</button>
@@ -141,14 +128,11 @@
         <button onclick="toggleLayer('siteBoundary')">Site Boundary</button>
     </div>
 
-    <!-- Attribute panel -->
+    <!-- 🔹 Attribute panel -->
     <div id="attribute-panel">
-        <h4>
-            Selected Feature Attributes 
-            <button onclick="clearSelection()">Clear</button>
-        </h4>
+        <h4>Feature Attributes</h4>
         <div id="feature-info">
-            <p>Click on a feature to see detailed attributes</p>
+            <p>Click on a feature to see details</p>
         </div>
     </div>
 
@@ -182,11 +166,11 @@
     <script src="./resources/Autolinker.min.js"></script>
     <script src="./resources/qgis2web.js"></script>
 
-    <!-- Attribute Panel Script -->
+    <!-- 🔹 Expanded Layer Switcher Control & Feature Info -->
     <script>
-        // Add Layer Switcher
         window.onload = function() {
             if (typeof map !== 'undefined') {
+                // Layer Switcher
                 var layerSwitcher = new ol.control.LayerSwitcher({
                     activationMode: 'click',
                     startActive: true,
@@ -195,6 +179,8 @@
                     collapseTipLabel: 'Collapse'
                 });
                 map.addControl(layerSwitcher);
+            } else {
+                console.error("Map object not found. Check qgis2web.js");
             }
         }
 
@@ -211,57 +197,36 @@
             var layer = layerRefs[layerName];
             if (layer) {
                 layer.setVisible(!layer.getVisible());
+            } else {
+                console.warn("Layer not found: " + layerName);
             }
         }
 
-        // Highlight layer
-        var highlightLayer = new ol.layer.Vector({
-            source: new ol.source.Vector(),
-            style: new ol.style.Style({
-                stroke: new ol.style.Stroke({ color: '#ff0000', width: 2 }),
-                fill: new ol.style.Fill({ color: 'rgba(255,0,0,0.1)' })
-            })
-        });
-        map.addLayer(highlightLayer);
-
-        // Show attributes on click
+        // Feature info panel on click
         map.on('singleclick', function(evt) {
             var infoDiv = document.getElementById('feature-info');
-            infoDiv.innerHTML = '';
-            highlightLayer.getSource().clear();
+            infoDiv.innerHTML = ''; // Clear previous info
 
+            var pixel = evt.pixel;
             var featureFound = false;
-            map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+
+            map.forEachFeatureAtPixel(pixel, function(feature, layer) {
                 featureFound = true;
-
-                // Highlight geometry
-                var geomFeature = new ol.Feature({
-                    geometry: feature.getGeometry().clone()
-                });
-                highlightLayer.getSource().addFeature(geomFeature);
-
-                // Attribute table
                 var attributes = feature.getProperties();
-                var table = '<table><tr><th>Attribute</th><th>Value</th></tr>';
+                var table = '<table>';
                 for (var key in attributes) {
                     if (key !== 'geometry') {
                         table += '<tr><td>' + key + '</td><td>' + attributes[key] + '</td></tr>';
                     }
                 }
                 table += '</table>';
-                infoDiv.innerHTML = table;
+                infoDiv.innerHTML += table;
             });
 
             if (!featureFound) {
-                infoDiv.innerHTML = '<p>No feature selected</p>';
+                infoDiv.innerHTML = '<p>No feature here</p>';
             }
         });
-
-        // Clear selection
-        function clearSelection() {
-            document.getElementById('feature-info').innerHTML = '<p>Click on a feature to see detailed attributes</p>';
-            highlightLayer.getSource().clear();
-        }
     </script>
 </body>
 </html>
