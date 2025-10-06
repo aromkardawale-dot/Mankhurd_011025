@@ -1,5 +1,5 @@
 ol.proj.proj4.register(proj4);
-//ol.proj.get("EPSG:3857").setExtent([8118069.323301, 2160492.398964, 8119539.091201, 2161635.968376]);
+//ol.proj.get("EPSG:3857").setExtent([8118339.983684, 2160647.062040, 8119442.309610, 2161504.739100]);
 var wms_layers = [];
 
 
@@ -93,24 +93,42 @@ var lyr_site2_boundary_5 = new ol.layer.Vector({
                 interactive: true,
                 title: '<img src="styles/legend/site2_boundary_5.png" /> site2_boundary'
             });
+var format_1m_contours_6 = new ol.format.GeoJSON();
+var features_1m_contours_6 = format_1m_contours_6.readFeatures(json_1m_contours_6, 
+            {dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
+var jsonSource_1m_contours_6 = new ol.source.Vector({
+    attributions: ' ',
+});
+jsonSource_1m_contours_6.addFeatures(features_1m_contours_6);
+var lyr_1m_contours_6 = new ol.layer.Vector({
+                declutter: false,
+                source:jsonSource_1m_contours_6, 
+                style: style_1m_contours_6,
+                popuplayertitle: '1m_contours',
+                interactive: true,
+                title: '<img src="styles/legend/1m_contours_6.png" /> 1m_contours'
+            });
 
-lyr_GoogleSatellite_0.setVisible(true);lyr_buildings_150725_1.setVisible(true);lyr_road_050825_2.setVisible(true);lyr_vegetation_150725_3.setVisible(true);lyr_waterbody_220725_4.setVisible(true);lyr_site2_boundary_5.setVisible(true);
-var layersList = [lyr_GoogleSatellite_0,lyr_buildings_150725_1,lyr_road_050825_2,lyr_vegetation_150725_3,lyr_waterbody_220725_4,lyr_site2_boundary_5];
+lyr_GoogleSatellite_0.setVisible(true);lyr_buildings_150725_1.setVisible(true);lyr_road_050825_2.setVisible(true);lyr_vegetation_150725_3.setVisible(true);lyr_waterbody_220725_4.setVisible(true);lyr_site2_boundary_5.setVisible(true);lyr_1m_contours_6.setVisible(true);
+var layersList = [lyr_GoogleSatellite_0,lyr_buildings_150725_1,lyr_road_050825_2,lyr_vegetation_150725_3,lyr_waterbody_220725_4,lyr_site2_boundary_5,lyr_1m_contours_6];
 lyr_buildings_150725_1.set('fieldAliases', {'bldg_id': 'bldg_id', 'bldg_use': 'bldg_use', 'wall_ml': 'wall_ml', 'bldg_ht': 'bldg_ht', 'bldg_flr': 'bldg_flr', 'bldg_clr': 'bldg_clr', 'roof_ml': 'roof_ml', 'bldg_fp': 'bldg_fp', 'no_hh': 'no_hh', 'cool_sys': 'cool_sys', 'bldg_area': 'bldg_area', 'bldg_cond': 'bldg_cond', 'population': 'population', });
 lyr_road_050825_2.set('fieldAliases', {'ro_name': 'ro_name', 'ro_width': 'ro_width', 'ro_ml': 'ro_ml', 'ro_typo': 'ro_typo', 'fid': 'fid', });
 lyr_vegetation_150725_3.set('fieldAliases', {'veg_id': 'veg_id', 'girth_rad': 'girth_rad', 'crown_rad': 'crown_rad', 'seasonal': 'seasonal', 'species': 'species', 'flaura_typ': 'flaura_typ', 'name': 'name', });
 lyr_waterbody_220725_4.set('fieldAliases', {'wt_id': 'wt_id', 'width': 'width', 'type': 'type', 'wt_ed': 'wt_ed', 'area': 'area', });
 lyr_site2_boundary_5.set('fieldAliases', {'id': 'id', 'area_name': 'area_name', });
+lyr_1m_contours_6.set('fieldAliases', {'fid': 'fid', 'ID': 'ID', 'ELEV': 'ELEV', });
 lyr_buildings_150725_1.set('fieldImages', {'bldg_id': 'TextEdit', 'bldg_use': 'TextEdit', 'wall_ml': 'TextEdit', 'bldg_ht': 'TextEdit', 'bldg_flr': 'TextEdit', 'bldg_clr': 'TextEdit', 'roof_ml': 'TextEdit', 'bldg_fp': 'TextEdit', 'no_hh': 'TextEdit', 'cool_sys': 'TextEdit', 'bldg_area': 'TextEdit', 'bldg_cond': 'TextEdit', 'population': 'TextEdit', });
 lyr_road_050825_2.set('fieldImages', {'ro_name': 'TextEdit', 'ro_width': 'TextEdit', 'ro_ml': 'TextEdit', 'ro_typo': 'TextEdit', 'fid': 'Range', });
 lyr_vegetation_150725_3.set('fieldImages', {'veg_id': 'TextEdit', 'girth_rad': 'TextEdit', 'crown_rad': 'TextEdit', 'seasonal': 'TextEdit', 'species': 'TextEdit', 'flaura_typ': 'TextEdit', 'name': 'TextEdit', });
 lyr_waterbody_220725_4.set('fieldImages', {'wt_id': 'TextEdit', 'width': 'TextEdit', 'type': 'TextEdit', 'wt_ed': 'TextEdit', 'area': 'TextEdit', });
 lyr_site2_boundary_5.set('fieldImages', {'id': 'TextEdit', 'area_name': 'TextEdit', });
+lyr_1m_contours_6.set('fieldImages', {'fid': 'TextEdit', 'ID': 'TextEdit', 'ELEV': 'TextEdit', });
 lyr_buildings_150725_1.set('fieldLabels', {'bldg_id': 'hidden field', 'bldg_use': 'inline label - visible with data', 'wall_ml': 'inline label - visible with data', 'bldg_ht': 'inline label - visible with data', 'bldg_flr': 'inline label - always visible', 'bldg_clr': 'inline label - always visible', 'roof_ml': 'inline label - always visible', 'bldg_fp': 'inline label - always visible', 'no_hh': 'inline label - always visible', 'cool_sys': 'inline label - always visible', 'bldg_area': 'inline label - always visible', 'bldg_cond': 'inline label - always visible', 'population': 'inline label - always visible', });
 lyr_road_050825_2.set('fieldLabels', {'ro_name': 'inline label - always visible', 'ro_width': 'inline label - always visible', 'ro_ml': 'inline label - always visible', 'ro_typo': 'inline label - visible with data', 'fid': 'hidden field', });
 lyr_vegetation_150725_3.set('fieldLabels', {'veg_id': 'hidden field', 'girth_rad': 'inline label - always visible', 'crown_rad': 'inline label - always visible', 'seasonal': 'inline label - always visible', 'species': 'inline label - always visible', 'flaura_typ': 'no label', 'name': 'no label', });
 lyr_waterbody_220725_4.set('fieldLabels', {'wt_id': 'hidden field', 'width': 'inline label - always visible', 'type': 'inline label - always visible', 'wt_ed': 'inline label - always visible', 'area': 'inline label - always visible', });
 lyr_site2_boundary_5.set('fieldLabels', {'id': 'hidden field', 'area_name': 'inline label - always visible', });
-lyr_site2_boundary_5.on('precompose', function(evt) {
+lyr_1m_contours_6.set('fieldLabels', {'fid': 'no label', 'ID': 'no label', 'ELEV': 'no label', });
+lyr_1m_contours_6.on('precompose', function(evt) {
     evt.context.globalCompositeOperation = 'normal';
 });
