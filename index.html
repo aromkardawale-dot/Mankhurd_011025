@@ -34,13 +34,13 @@
             padding: 2px !important;
         } 
 
-        /* Sidebar (right side for layers + attributes) */
+        /* Right Sidebar */
         #sidebar {
             position: absolute;
             top: 0;
             right: 0;
             bottom: 0;
-            width: 320px;
+            width: 340px;
             background: rgba(255, 255, 255, 0.98);
             border-left: 2px solid #ccc;
             z-index: 1000;
@@ -48,21 +48,22 @@
             flex-direction: column;
         }
 
-        /* Layer Switcher styling */
+        /* Layer Switcher inside sidebar */
         .ol-control.ol-layerswitcher {
-            position: relative !important; /* move inside sidebar */
+            position: relative !important;
             right: auto !important;
             left: auto !important;
             top: auto !important;
             margin: 10px;
         }
 
-        /* Attribute panel (below layer switcher) */
+        /* Attribute Info Panel */
         #attribute-panel {
             flex: 1;
             overflow-y: auto;
             padding: 10px;
             font-size: 13px;
+            border-top: 1px solid #ccc;
         }
         #attribute-panel h4 {
             margin: 0 0 8px 0;
@@ -90,7 +91,7 @@
             padding: 0;
         }
 
-        /* Layer toggle buttons (optional left side) */
+        /* Optional Toggle Buttons (Left Side) */
         #layer-buttons {
             position: absolute;
             top: 10px;
@@ -118,21 +119,21 @@
 <body>
     <div id="map"></div>
 
-    <!-- Sidebar (right) -->
+    <!-- Right Sidebar -->
     <div id="sidebar">
-        <!-- Layer Switcher goes here -->
+        <!-- Layer Switcher -->
         <div id="layer-switcher-container"></div>
 
-        <!-- Attribute Panel -->
+        <!-- Attribute Info Panel -->
         <div id="attribute-panel">
             <h4>Selected Feature Attributes</h4>
             <div id="feature-info">
-                <p>Click on a feature to see detailed attributes</p>
+                <p>Click on a feature to see details</p>
             </div>
         </div>
     </div>
 
-    <!-- Optional Layer Buttons (left side) -->
+    <!-- Optional Layer Toggle Buttons -->
     <div id="layer-buttons">
         <h4>Toggle Layers</h4>
         <button onclick="toggleLayer('buildings')">Buildings</button>
@@ -173,7 +174,7 @@
     <script src="./resources/qgis2web.js"></script>
 
     <script>
-        // Add Layer Switcher inside custom container
+        // Add Layer Switcher inside sidebar
         window.onload = function() {
             if (typeof map !== 'undefined') {
                 var layerSwitcher = new ol.control.LayerSwitcher({
@@ -182,7 +183,7 @@
                     tipLabel: 'Layers',
                     groupSelectStyle: 'children',
                     collapseTipLabel: 'Collapse',
-                    target: document.getElementById('layer-switcher-container') // attach inside sidebar
+                    target: document.getElementById('layer-switcher-container')
                 });
                 map.addControl(layerSwitcher);
             } else {
@@ -216,7 +217,7 @@
         });
         map.addLayer(highlightLayer);
 
-        // Click event for attributes
+        // Click event to show attributes
         map.on('singleclick', function(evt) {
             var infoDiv = document.getElementById('feature-info');
             infoDiv.innerHTML = '';
@@ -226,7 +227,7 @@
             map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
                 featureFound = true;
 
-                // Highlight
+                // Highlight geometry
                 var geomFeature = new ol.Feature({ geometry: feature.getGeometry().clone() });
                 highlightLayer.getSource().addFeature(geomFeature);
 
