@@ -1,243 +1,247 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 
-    <!-- OpenLayers CSS -->
-    <link rel="stylesheet" href="./resources/ol.css">
-    <link rel="stylesheet" href="resources/fontawesome-all.min.css">
-    <link href="resources/photon-geocoder-autocomplete.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
-    <link rel="stylesheet" href="./resources/qgis2web.css">
+  <!-- OpenLayers CSS -->
+  <link rel="stylesheet" href="./resources/ol.css">
+  <link rel="stylesheet" href="resources/fontawesome-all.min.css">
+  <link href="resources/photon-geocoder-autocomplete.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+  <link rel="stylesheet" href="./resources/qgis2web.css">
 
-    <style>
-        html, body {
-            background-color: #ffffff;
-        }
-        .ol-control > * {
-            background-color: #f8f8f8!important;
-            color: #444444!important;
-            border-radius: 0px;
-        }
-        .ol-attribution a, 
-        .gcd-gl-input::placeholder, 
-        .search-layer-input-search::placeholder {
-            color: #444444!important;
-        }
-        .search-layer-input-search {
-            background-color: #f8f8f8!important;
-        }
-        .ol-control > *:focus, 
-        .ol-control >*:hover {
-            background-color: rgba(248, 248, 248, 0.7)!important;
-        } 
-        .ol-control {
-            background-color: rgba(255,255,255,.4) !important;
-            padding: 2px !important;
-        }
+  <style>
+    html, body {
+      background-color: #ffffff;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
 
-        /* Fullscreen map */
-        html, body, #map {
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            margin: 0;
-        }
+    #map {
+      width: 100%;
+      height: 100%;
+    }
 
-        /* Right-side layer switcher */
-        .layer-switcher {
-            right: 10px;
-            left: auto;
-            top: 70px;
-        }
+    /* Unified side panel */
+    #side-panel {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 300px;
+      background: #f9f9f9;
+      border: 1px solid #ccc;
+      padding: 10px;
+      font-size: 14px;
+      z-index: 9999;
+      overflow-y: auto;
+      max-height: 95%;
+      border-radius: 6px;
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+    }
 
-        /* Filter panel directly below layer panel */
-        #filter-panel {
-            position: absolute;
-            top: 300px; /* dynamically placed below layer switcher */
-            right: 10px;
-            width: 250px;
-            background: #f9f9f9;
-            border: 1px solid #ccc;
-            padding: 10px;
-            font-size: 14px;
-            z-index: 9998;
-        }
+    #side-panel h3 {
+      margin: 10px 0 8px 0;
+      font-size: 16px;
+      color: #333;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
 
-        #filter-panel h3 {
-            margin: 0 0 8px 0;
-            font-size: 16px;
-        }
+    #side-panel label {
+      display: block;
+      margin-top: 8px;
+      font-weight: bold;
+    }
 
-        #filter-panel label {
-            display: block;
-            margin-top: 8px;
-            font-weight: bold;
-        }
+    #side-panel select, 
+    #side-panel button {
+      width: 100%;
+      margin-top: 5px;
+      padding: 6px;
+      font-size: 14px;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+    }
 
-        #filter-panel select, 
-        #filter-panel button {
-            width: 100%;
-            margin-top: 5px;
-            padding: 6px;
-            font-size: 14px;
-        }
+    #side-panel button {
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+    }
 
-        /* Attribute panel */
-        #attribute-panel {
-            position: absolute;
-            right: 10px;
-            bottom: 10px;
-            width: 300px;
-            height: 200px;
-            overflow-y: auto;
-            background: white;
-            border: 1px solid #ccc;
-            padding: 10px;
-            font-size: 13px;
-            display: none; /* hidden until a feature is clicked */
-            z-index: 9999;
-        }
+    #side-panel button:hover {
+      background-color: #666;
+    }
 
-        /* Toggle button for layer panel */
-        #toggle-layers {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 10000;
-            background: #444;
-            color: white;
-            padding: 6px 10px;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-        }
-    </style>
+    /* Layer switcher container */
+    .layer-switcher {
+      position: relative !important;
+      top: auto !important;
+      right: auto !important;
+      left: auto !important;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+    }
 
-    <title>OpenLayers Map with Layer & Attribute Panel + Filter</title>
+    /* Toggle button */
+    #toggle-layers {
+      position: absolute;
+      top: 10px;
+      right: 320px;
+      z-index: 10000;
+      background: #444;
+      color: white;
+      padding: 6px 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      border-radius: 4px;
+    }
+
+    /* Feature info section */
+    #attribute-content ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #attribute-content li {
+      margin: 2px 0;
+      font-size: 13px;
+    }
+
+  </style>
+
+  <title>OpenLayers Map Unified Panel</title>
 </head>
 <body>
-    <button id="toggle-layers">Toggle Layers</button>
+  <button id="toggle-layers">Toggle Panel</button>
 
-    <div id="map">
-        <div id="popup" class="ol-popup">
-            <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-            <div id="popup-content"></div>
-        </div>
+  <div id="map"></div>
+
+  <!-- Unified Side Panel -->
+  <div id="side-panel">
+    <!-- Layer Switcher -->
+    <div id="layerSwitcherContainer">
+      <h3>Layers</h3>
+      <!-- Layer switcher will be inserted here -->
     </div>
 
-    <!-- Attribute panel -->
-    <div id="attribute-panel">
-        <b>Feature Info</b>
-        <hr>
-        <div id="attribute-content">Click on a feature to view details</div>
+    <!-- Map Controls -->
+    <div id="mapControls">
+      <h3>Map Controls</h3>
+      <label for="layerSelect">Select layer</label>
+      <select id="layerSelect">
+        <option value="Buildings">Buildings</option>
+        <option value="Roads">Roads</option>
+        <option value="Vegetation">Vegetation</option>
+      </select>
+
+      <label for="attributeSelect">Select attribute</label>
+      <select id="attributeSelect">
+        <option value="bldg_use">bldg_use</option>
+        <option value="height">height</option>
+        <option value="type">type</option>
+      </select>
+
+      <button id="resetStyle">Reset styling</button>
     </div>
 
-    <!-- Filter panel (placed under layer switcher) -->
-    <div id="filter-panel">
-        <h3>Map Controls</h3>
-        <label for="layerSelect">Select layer</label>
-        <select id="layerSelect">
-            <option value="Buildings">Buildings</option>
-            <option value="Roads">Roads</option>
-            <option value="Vegetation">Vegetation</option>
-        </select>
-
-        <label for="attributeSelect">Select attribute</label>
-        <select id="attributeSelect">
-            <option value="bldg_use">bldg_use</option>
-            <option value="height">height</option>
-            <option value="type">type</option>
-        </select>
-
-        <button id="resetStyle">Reset styling</button>
+    <!-- Feature Info -->
+    <div id="featureInfo">
+      <h3>Feature Info</h3>
+      <div id="attribute-content">No feature clicked</div>
     </div>
+  </div>
 
-    <!-- Required JS -->
-    <script src="resources/qgis2web_expressions.js"></script>
-    <script src="resources/proj4.js"></script>
-    <script>
-        proj4.defs('EPSG:3857','+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs');
-    </script>
-    <script src="./resources/functions.js"></script>
-    <script src="./resources/ol.js"></script>
-    <script src="./resources/ol-layerswitcher.js"></script>
-    <script src="resources/photon-geocoder-autocomplete.min.js"></script>
+  <!-- Required JS -->
+  <script src="resources/qgis2web_expressions.js"></script>
+  <script src="resources/proj4.js"></script>
+  <script>
+    proj4.defs('EPSG:3857','+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs');
+  </script>
+  <script src="./resources/functions.js"></script>
+  <script src="./resources/ol.js"></script>
+  <script src="./resources/ol-layerswitcher.js"></script>
+  <script src="resources/photon-geocoder-autocomplete.min.js"></script>
 
-    <!-- Layers -->
-    <script src="layers/1m_contours_1.js"></script>
-    <script src="layers/buildings_150725_2.js"></script>
-    <script src="layers/road_050825_3.js"></script>
-    <script src="layers/vegetation_150725_4.js"></script>
-    <script src="layers/waterbody_220725_5.js"></script>
-    <script src="layers/site2_boundary_6.js"></script>
+  <!-- Layers -->
+  <script src="layers/1m_contours_1.js"></script>
+  <script src="layers/buildings_150725_2.js"></script>
+  <script src="layers/road_050825_3.js"></script>
+  <script src="layers/vegetation_150725_4.js"></script>
+  <script src="layers/waterbody_220725_5.js"></script>
+  <script src="layers/site2_boundary_6.js"></script>
 
-    <!-- Styles -->
-    <script src="styles/1m_contours_1_style.js"></script>
-    <script src="styles/buildings_150725_2_style.js"></script>
-    <script src="styles/road_050825_3_style.js"></script>
-    <script src="styles/vegetation_150725_4_style.js"></script>
-    <script src="styles/waterbody_220725_5_style.js"></script>
-    <script src="styles/site2_boundary_6_style.js"></script>
+  <!-- Styles -->
+  <script src="styles/1m_contours_1_style.js"></script>
+  <script src="styles/buildings_150725_2_style.js"></script>
+  <script src="styles/road_050825_3_style.js"></script>
+  <script src="styles/vegetation_150725_4_style.js"></script>
+  <script src="styles/waterbody_220725_5_style.js"></script>
+  <script src="styles/site2_boundary_6_style.js"></script>
 
-    <!-- Layer List -->
-    <script src="./layers/layers.js" type="text/javascript"></script> 
-    <script src="./resources/Autolinker.min.js"></script>
-    <script src="./resources/qgis2web.js"></script>
+  <!-- Layer List -->
+  <script src="./layers/layers.js" type="text/javascript"></script> 
+  <script src="./resources/Autolinker.min.js"></script>
+  <script src="./resources/qgis2web.js"></script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Create layer switcher
-            var layerSwitcher = new ol.control.LayerSwitcher({
-                activationMode: 'click',
-                startActive: true,
-                tipLabel: 'Layers',
-                groupSelectStyle: 'children'
-            });
-            map.addControl(layerSwitcher);
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Layer switcher
+      var layerSwitcher = new ol.control.LayerSwitcher({
+        activationMode: 'click',
+        startActive: true,
+        tipLabel: 'Layers',
+        groupSelectStyle: 'children'
+      });
+      map.addControl(layerSwitcher);
 
-            // Toggle button functionality
-            const toggleButton = document.getElementById("toggle-layers");
-            toggleButton.addEventListener("click", function() {
-                const ls = document.querySelector(".layer-switcher");
-                if (ls.style.display === "none") {
-                    ls.style.display = "block";
-                } else {
-                    ls.style.display = "none";
-                }
-            });
+      // Move the layer switcher into our custom container
+      const lsElement = document.querySelector('.layer-switcher');
+      document.getElementById('layerSwitcherContainer').appendChild(lsElement);
 
-            // Feature info on click
-            map.on("singleclick", function(evt) {
-                document.getElementById("attribute-panel").style.display = "block";
-                const content = document.getElementById("attribute-content");
-                content.innerHTML = "No feature clicked";
+      // Toggle visibility of the entire panel
+      document.getElementById("toggle-layers").addEventListener("click", function() {
+        const sidePanel = document.getElementById("side-panel");
+        if (sidePanel.style.display === "none") {
+          sidePanel.style.display = "block";
+        } else {
+          sidePanel.style.display = "none";
+        }
+      });
 
-                map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-                    if (feature) {
-                        let props = feature.getProperties();
-                        let html = "<ul>";
-                        for (let key in props) {
-                            if (key !== "geometry") {
-                                html += "<li><b>" + key + ":</b> " + props[key] + "</li>";
-                            }
-                        }
-                        html += "</ul>";
-                        content.innerHTML = html;
-                    }
-                });
-            });
+      // Feature info display
+      map.on("singleclick", function(evt) {
+        const content = document.getElementById("attribute-content");
+        content.innerHTML = "No feature clicked";
 
-            // Filtering logic (basic placeholder)
-            const resetBtn = document.getElementById("resetStyle");
-            resetBtn.addEventListener("click", function() {
-                alert("Resetting styling (hook to reset function here)");
-            });
+        map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+          if (feature) {
+            let props = feature.getProperties();
+            let html = "<ul>";
+            for (let key in props) {
+              if (key !== "geometry") {
+                html += "<li><b>" + key + ":</b> " + props[key] + "</li>";
+              }
+            }
+            html += "</ul>";
+            content.innerHTML = html;
+          }
         });
-    </script>
+      });
+
+      // Reset button placeholder
+      document.getElementById("resetStyle").addEventListener("click", function() {
+        alert("Resetting styling (hook your function here)");
+      });
+    });
+  </script>
 </body>
 </html>
