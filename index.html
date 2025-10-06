@@ -57,6 +57,28 @@
             padding: 0;
             margin: 0;
         }
+
+        /* 🔹 Layer buttons */
+        #layer-buttons {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background: rgba(255,255,255,0.9);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        #layer-buttons h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+        }
+        #layer-buttons button {
+            display: block;
+            margin: 2px 0;
+            width: 120px;
+            cursor: pointer;
+        }
     </style>
     <title>GIS Map</title>
 </head>
@@ -66,6 +88,16 @@
             <a href="#" id="popup-closer" class="ol-popup-closer"></a>
             <div id="popup-content"></div>
         </div>
+    </div>
+
+    <!-- 🔹 Layer toggle buttons -->
+    <div id="layer-buttons">
+        <h4>Toggle Layers</h4>
+        <button onclick="toggleLayer('buildings')">Buildings</button>
+        <button onclick="toggleLayer('road')">Road</button>
+        <button onclick="toggleLayer('vegetation')">Vegetation</button>
+        <button onclick="toggleLayer('waterbody')">Waterbody</button>
+        <button onclick="toggleLayer('siteBoundary')">Site Boundary</button>
     </div>
 
     <!-- JS Libraries -->
@@ -104,7 +136,7 @@
             if (typeof map !== 'undefined') {
                 var layerSwitcher = new ol.control.LayerSwitcher({
                     activationMode: 'click',
-                    startActive: true,   // ✅ expanded by default
+                    startActive: true,
                     tipLabel: 'Layers',
                     groupSelectStyle: 'children',
                     collapseTipLabel: 'Collapse'
@@ -112,6 +144,24 @@
                 map.addControl(layerSwitcher);
             } else {
                 console.error("Map object not found. Check qgis2web.js");
+            }
+        }
+
+        // 🔹 Layer toggle function
+        var layerRefs = {
+            'buildings': buildings_150725_1,
+            'road': road_050825_2,
+            'vegetation': vegetation_150725_3,
+            'waterbody': waterbody_220725_4,
+            'siteBoundary': site2_boundary_5
+        };
+
+        function toggleLayer(layerName) {
+            var layer = layerRefs[layerName];
+            if (layer) {
+                layer.setVisible(!layer.getVisible());
+            } else {
+                console.warn("Layer not found: " + layerName);
             }
         }
     </script>
