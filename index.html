@@ -64,10 +64,11 @@
             top: 10px;
             left: 10px;
             z-index: 1000;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.95);
             padding: 8px;
             border-radius: 4px;
             font-size: 13px;
+            max-width: 250px;
         }
         #layer-buttons h4 {
             margin: 0 0 5px 0;
@@ -78,6 +79,33 @@
             margin: 2px 0;
             width: 120px;
             cursor: pointer;
+        }
+
+        /* 🔹 Attribute panel */
+        #attribute-panel {
+            position: absolute;
+            top: 200px;
+            left: 10px;
+            z-index: 1000;
+            background: rgba(255,255,255,0.95);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            width: 250px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        #attribute-panel h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+        }
+        #feature-info table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        #feature-info td {
+            border: 1px solid #ccc;
+            padding: 2px;
         }
     </style>
     <title>GIS Map</title>
@@ -98,6 +126,14 @@
         <button onclick="toggleLayer('vegetation')">Vegetation</button>
         <button onclick="toggleLayer('waterbody')">Waterbody</button>
         <button onclick="toggleLayer('siteBoundary')">Site Boundary</button>
+    </div>
+
+    <!-- 🔹 Attribute panel -->
+    <div id="attribute-panel">
+        <h4>Feature Attributes</h4>
+        <div id="feature-info">
+            <p>Click on a feature to see details</p>
+        </div>
     </div>
 
     <!-- JS Libraries -->
@@ -130,10 +166,11 @@
     <script src="./resources/Autolinker.min.js"></script>
     <script src="./resources/qgis2web.js"></script>
 
-    <!-- 🔹 Expanded Layer Switcher Control -->
+    <!-- 🔹 Expanded Layer Switcher Control & Feature Info -->
     <script>
         window.onload = function() {
             if (typeof map !== 'undefined') {
+                // Layer Switcher
                 var layerSwitcher = new ol.control.LayerSwitcher({
                     activationMode: 'click',
                     startActive: true,
@@ -147,7 +184,7 @@
             }
         }
 
-        // 🔹 Layer toggle function
+        // Layer toggle references
         var layerRefs = {
             'buildings': buildings_150725_1,
             'road': road_050825_2,
@@ -164,6 +201,32 @@
                 console.warn("Layer not found: " + layerName);
             }
         }
+
+        // Feature info panel on click
+        map.on('singleclick', function(evt) {
+            var infoDiv = document.getElementById('feature-info');
+            infoDiv.innerHTML = ''; // Clear previous info
+
+            var pixel = evt.pixel;
+            var featureFound = false;
+
+            map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+                featureFound = true;
+                var attributes = feature.getProperties();
+                var table = '<table>';
+                for (var key in attributes) {
+                    if (key !== 'geometry') {
+                        table += '<tr><td>' + key + '</td><td>' + attributes[key] + '</td></tr>';
+                    }
+                }
+                table += '</table>';
+                infoDiv.innerHTML += table;
+            });
+
+            if (!featureFound) {
+                infoDiv.innerHTML = '<p>No feature here</p>';
+            }
+        });
     </script>
 </body>
 </html>
