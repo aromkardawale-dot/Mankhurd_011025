@@ -21,6 +21,7 @@
       padding: 0;
       width: 100%;
       height: 100%;
+      overflow: hidden;
     }
 
     #map {
@@ -28,27 +29,27 @@
       height: 100%;
     }
 
-    /* One combined side panel */
+    /* Unified Sidebar Panel */
     #info-panel {
       position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 300px;
+      top: 0;
+      left: 0;
+      width: 320px;
+      height: 100%;
       background: #f9f9f9;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      padding: 12px;
+      border-right: 1px solid #ccc;
+      box-shadow: 2px 0 6px rgba(0,0,0,0.15);
+      padding: 15px;
       font-size: 14px;
       z-index: 9999;
       overflow-y: auto;
-      max-height: 95%;
+      transition: all 0.3s ease;
     }
 
     #info-panel h3 {
-      margin: 10px 0 8px 0;
+      margin: 16px 0 8px 0;
       font-size: 16px;
-      color: #333;
+      color: #222;
       border-bottom: 1px solid #ccc;
       padding-bottom: 5px;
     }
@@ -56,13 +57,14 @@
     #info-panel label {
       display: block;
       margin-top: 8px;
-      font-weight: bold;
+      font-weight: 600;
+      color: #333;
     }
 
     #info-panel select, 
     #info-panel button {
       width: 100%;
-      margin-top: 5px;
+      margin-top: 6px;
       padding: 6px;
       font-size: 14px;
       border: 1px solid #aaa;
@@ -80,15 +82,11 @@
       background-color: #666;
     }
 
-    /* Layer switcher styling */
     .layer-switcher {
       position: relative !important;
-      top: auto !important;
-      right: auto !important;
-      left: auto !important;
-      margin: 0;
       border: 1px solid #ccc;
       border-radius: 4px;
+      margin-top: 10px;
     }
 
     /* Feature info list */
@@ -107,31 +105,39 @@
     #toggle-panel {
       position: absolute;
       top: 10px;
-      right: 320px;
+      left: 330px;
       z-index: 10000;
       background: #444;
       color: white;
-      padding: 6px 10px;
+      padding: 6px 12px;
       border: none;
       cursor: pointer;
       font-size: 14px;
       border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    #toggle-panel:hover {
+      background: #666;
+    }
+
+    /* When panel hidden */
+    .collapsed {
+      transform: translateX(-330px);
     }
   </style>
 
   <title>Unified Map Info Panel</title>
 </head>
 <body>
-  <button id="toggle-panel">Toggle Panel</button>
-
+  <button id="toggle-panel">Hide Panel</button>
   <div id="map"></div>
 
-  <!-- ONE Combined Panel -->
+  <!-- ONE Combined Vertical Panel -->
   <div id="info-panel">
-    <!-- Layer Switcher -->
+    <!-- Layers -->
     <div id="layerSection">
       <h3>Layers</h3>
-      <!-- Layer switcher gets inserted here -->
     </div>
 
     <!-- Map Controls -->
@@ -204,21 +210,27 @@
       });
       map.addControl(layerSwitcher);
 
-      // Move the layer switcher into our combined panel
+      // Move layer switcher into the panel
       const ls = document.querySelector('.layer-switcher');
       document.getElementById('layerSection').appendChild(ls);
 
       // Toggle panel visibility
-      document.getElementById("toggle-panel").addEventListener("click", function() {
-        const panel = document.getElementById("info-panel");
-        if (panel.style.display === "none") {
-          panel.style.display = "block";
+      const panel = document.getElementById("info-panel");
+      const toggleBtn = document.getElementById("toggle-panel");
+
+      toggleBtn.addEventListener("click", function() {
+        if (panel.classList.contains("collapsed")) {
+          panel.classList.remove("collapsed");
+          toggleBtn.style.left = "330px";
+          toggleBtn.textContent = "Hide Panel";
         } else {
-          panel.style.display = "none";
+          panel.classList.add("collapsed");
+          toggleBtn.style.left = "10px";
+          toggleBtn.textContent = "Show Panel";
         }
       });
 
-      // Feature info on click
+      // Feature info click
       map.on("singleclick", function(evt) {
         const content = document.getElementById("attribute-content");
         content.innerHTML = "No feature clicked";
