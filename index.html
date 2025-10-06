@@ -91,8 +91,8 @@
             padding: 8px;
             border-radius: 4px;
             font-size: 12px;
-            width: 300px;
-            max-height: 400px;
+            width: 250px;
+            max-height: 350px;
             overflow-y: auto;
         }
         #attribute-panel h4 {
@@ -103,13 +103,14 @@
             border-collapse: collapse;
             width: 100%;
         }
-        #feature-info th, #feature-info td {
+        #feature-info td {
             border: 1px solid #ccc;
-            padding: 4px;
-            text-align: left;
+            padding: 2px;
         }
         #feature-info th {
-            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 2px;
+            background: #f0f0f0;
         }
     </style>
     <title>GIS Map</title>
@@ -136,7 +137,7 @@
     <div id="attribute-panel">
         <h4>Selected Feature Attributes</h4>
         <div id="feature-info">
-            <p>Click on a feature to see detailed attributes</p>
+            <p>Click on a feature to see details</p>
         </div>
     </div>
 
@@ -170,10 +171,11 @@
     <script src="./resources/Autolinker.min.js"></script>
     <script src="./resources/qgis2web.js"></script>
 
-    <!-- 🔹 Layer Switcher + Detailed Feature Info -->
+    <!-- 🔹 Layer Switcher + Feature Info -->
     <script>
         window.onload = function() {
             if (typeof map !== 'undefined') {
+                // Layer Switcher
                 var layerSwitcher = new ol.control.LayerSwitcher({
                     activationMode: 'click',
                     startActive: true,
@@ -205,7 +207,7 @@
             }
         }
 
-        // Feature info panel with selection highlight
+        // Feature info panel (always expanded) with selection highlight
         var selectedFeature = null;
         var highlightLayer = new ol.layer.Vector({
             source: new ol.source.Vector(),
@@ -226,9 +228,10 @@
             infoDiv.innerHTML = ''; // Clear previous info
             highlightLayer.getSource().clear();
 
+            var pixel = evt.pixel;
             var featureFound = false;
 
-            map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+            map.forEachFeatureAtPixel(pixel, function(feature, layer) {
                 featureFound = true;
                 selectedFeature = feature;
 
@@ -238,7 +241,7 @@
                 });
                 highlightLayer.getSource().addFeature(geomFeature);
 
-                // Display detailed attributes
+                // Show attributes
                 var attributes = feature.getProperties();
                 var table = '<table>';
                 table += '<tr><th>Attribute</th><th>Value</th></tr>';
