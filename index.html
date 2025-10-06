@@ -125,13 +125,38 @@
     .collapsed {
       transform: translateX(-330px);
     }
+
+    /* North arrow styling */
+    #north-arrow {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 50px;
+      height: 50px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Compass_rose_pale.svg/120px-Compass_rose_pale.svg.png') no-repeat center;
+      background-size: contain;
+      z-index: 10000;
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    /* Scale bar container override */
+    .ol-scale-line {
+      background: rgba(255,255,255,0.8);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 12px;
+      bottom: 8px;
+      left: 8px;
+    }
   </style>
 
-  <title>Unified Map Info Panel</title>
+  <title>Unified Map with Scale & North</title>
 </head>
 <body>
   <button id="toggle-panel">Hide Panel</button>
   <div id="map"></div>
+  <div id="north-arrow"></div>
 
   <!-- ONE Combined Vertical Panel -->
   <div id="info-panel">
@@ -209,6 +234,13 @@
         groupSelectStyle: 'children'
       });
       map.addControl(layerSwitcher);
+
+      // Add scale bar (bottom-left)
+      var scaleLineControl = new ol.control.ScaleLine({
+        units: 'metric',
+        minWidth: 100
+      });
+      map.addControl(scaleLineControl);
 
       // Move layer switcher into the panel
       const ls = document.querySelector('.layer-switcher');
