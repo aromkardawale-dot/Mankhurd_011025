@@ -5,6 +5,7 @@ var wms_layers = [];
 
         var lyr_CartoLight_0 = new ol.layer.Tile({
             'title': 'Carto Light',
+            'type':'base',
             'opacity': 1.000000,
             
             
