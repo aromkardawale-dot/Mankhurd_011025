@@ -67,7 +67,7 @@
             border: 1px solid #ccc;
             padding: 10px;
             font-size: 13px;
-            display: none; /* hidden until a feature is clicked */
+            display: none;
             z-index: 9999;
         }
 
@@ -84,9 +84,34 @@
             cursor: pointer;
             font-size: 14px;
         }
+
+        /* Map Controls Panel */
+        #map-controls {
+            position: absolute;
+            top: 70px;
+            right: 320px; /* so it doesn’t overlap layer switcher */
+            width: 250px;
+            background: #f4f4f4;
+            border: 1px solid #aaa;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            z-index: 10000;
+        }
+        #map-controls h3 {
+            margin-top: 0;
+        }
+        #map-controls select, 
+        #map-controls button {
+            width: 100%;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            padding: 5px;
+            font-size: 14px;
+        }
     </style>
 
-    <title>OpenLayers Map with Layer & Attribute Panel</title>
+    <title>OpenLayers Map with Layer, Attribute & Filter Controls</title>
 </head>
 <body>
     <button id="toggle-layers">Toggle Layers</button>
@@ -103,6 +128,26 @@
         <b>Feature Info</b>
         <hr>
         <div id="attribute-content">Click on a feature to view details</div>
+    </div>
+
+    <!-- Map Controls Panel -->
+    <div id="map-controls">
+        <h3>Map Controls</h3>
+        <label for="layer-select"><b>Select layer</b></label>
+        <select id="layer-select">
+            <option value="Buildings">Buildings</option>
+            <option value="Roads">Roads</option>
+            <option value="Vegetation">Vegetation</option>
+        </select>
+
+        <label for="attribute-select"><b>Select attribute</b></label>
+        <select id="attribute-select">
+            <option value="bldg_use">bldg_use</option>
+            <option value="height">height</option>
+            <option value="type">type</option>
+        </select>
+
+        <button id="reset-style">Reset styling</button>
     </div>
 
     <!-- Required JS -->
@@ -148,7 +193,7 @@
             });
             map.addControl(layerSwitcher);
 
-            // Toggle button functionality
+            // Toggle button for layer panel
             const toggleButton = document.getElementById("toggle-layers");
             toggleButton.addEventListener("click", function() {
                 const ls = document.querySelector(".layer-switcher");
@@ -159,7 +204,7 @@
                 }
             });
 
-            // Feature info on click
+            // Feature info panel on click
             map.on("singleclick", function(evt) {
                 document.getElementById("attribute-panel").style.display = "block";
                 const content = document.getElementById("attribute-content");
@@ -178,6 +223,25 @@
                         content.innerHTML = html;
                     }
                 });
+            });
+
+            // Filtering logic (simplified)
+            const layerSelect = document.getElementById("layer-select");
+            const attrSelect = document.getElementById("attribute-select");
+            const resetButton = document.getElementById("reset-style");
+
+            layerSelect.addEventListener("change", function() {
+                console.log("Selected Layer:", this.value);
+            });
+
+            attrSelect.addEventListener("change", function() {
+                console.log("Selected Attribute:", this.value);
+                // Here you could apply a filter style to the selected layer
+            });
+
+            resetButton.addEventListener("click", function() {
+                console.log("Reset styling");
+                // Reset layer styling logic goes here
             });
         });
     </script>
