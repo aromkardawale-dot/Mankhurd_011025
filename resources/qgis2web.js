@@ -888,12 +888,6 @@ let measuring = false;
 
 //layerswitcher
 
-var layerSwitcher = new ol.control.LayerSwitcher({
-    tipLabel: "Layers",
-    target: 'top-right-container'
-});
-map.addControl(layerSwitcher);
-    
 
 
 
