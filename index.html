@@ -28,24 +28,24 @@
       height: 100%;
     }
 
-    /* Unified side panel */
-    #side-panel {
+    /* One combined side panel */
+    #info-panel {
       position: absolute;
       top: 10px;
       right: 10px;
       width: 300px;
       background: #f9f9f9;
       border: 1px solid #ccc;
-      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      padding: 12px;
       font-size: 14px;
       z-index: 9999;
       overflow-y: auto;
       max-height: 95%;
-      border-radius: 6px;
-      box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
     }
 
-    #side-panel h3 {
+    #info-panel h3 {
       margin: 10px 0 8px 0;
       font-size: 16px;
       color: #333;
@@ -53,44 +53,58 @@
       padding-bottom: 5px;
     }
 
-    #side-panel label {
+    #info-panel label {
       display: block;
       margin-top: 8px;
       font-weight: bold;
     }
 
-    #side-panel select, 
-    #side-panel button {
+    #info-panel select, 
+    #info-panel button {
       width: 100%;
       margin-top: 5px;
       padding: 6px;
       font-size: 14px;
       border: 1px solid #aaa;
       border-radius: 4px;
+      box-sizing: border-box;
     }
 
-    #side-panel button {
+    #info-panel button {
       background-color: #444;
       color: white;
       cursor: pointer;
     }
 
-    #side-panel button:hover {
+    #info-panel button:hover {
       background-color: #666;
     }
 
-    /* Layer switcher container */
+    /* Layer switcher styling */
     .layer-switcher {
       position: relative !important;
       top: auto !important;
       right: auto !important;
       left: auto !important;
-      margin-bottom: 15px;
+      margin: 0;
       border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Feature info list */
+    #attribute-content ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #attribute-content li {
+      margin: 2px 0;
+      font-size: 13px;
     }
 
     /* Toggle button */
-    #toggle-layers {
+    #toggle-panel {
       position: absolute;
       top: 10px;
       right: 320px;
@@ -103,34 +117,21 @@
       font-size: 14px;
       border-radius: 4px;
     }
-
-    /* Feature info section */
-    #attribute-content ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    #attribute-content li {
-      margin: 2px 0;
-      font-size: 13px;
-    }
-
   </style>
 
-  <title>OpenLayers Map Unified Panel</title>
+  <title>Unified Map Info Panel</title>
 </head>
 <body>
-  <button id="toggle-layers">Toggle Panel</button>
+  <button id="toggle-panel">Toggle Panel</button>
 
   <div id="map"></div>
 
-  <!-- Unified Side Panel -->
-  <div id="side-panel">
+  <!-- ONE Combined Panel -->
+  <div id="info-panel">
     <!-- Layer Switcher -->
-    <div id="layerSwitcherContainer">
+    <div id="layerSection">
       <h3>Layers</h3>
-      <!-- Layer switcher will be inserted here -->
+      <!-- Layer switcher gets inserted here -->
     </div>
 
     <!-- Map Controls -->
@@ -160,7 +161,7 @@
     </div>
   </div>
 
-  <!-- Required JS -->
+  <!-- JS -->
   <script src="resources/qgis2web_expressions.js"></script>
   <script src="resources/proj4.js"></script>
   <script>
@@ -187,14 +188,14 @@
   <script src="styles/waterbody_220725_5_style.js"></script>
   <script src="styles/site2_boundary_6_style.js"></script>
 
-  <!-- Layer List -->
-  <script src="./layers/layers.js" type="text/javascript"></script> 
+  <!-- Layer list -->
+  <script src="./layers/layers.js" type="text/javascript"></script>
   <script src="./resources/Autolinker.min.js"></script>
   <script src="./resources/qgis2web.js"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      // Layer switcher
+      // Add layer switcher control
       var layerSwitcher = new ol.control.LayerSwitcher({
         activationMode: 'click',
         startActive: true,
@@ -203,21 +204,21 @@
       });
       map.addControl(layerSwitcher);
 
-      // Move the layer switcher into our custom container
-      const lsElement = document.querySelector('.layer-switcher');
-      document.getElementById('layerSwitcherContainer').appendChild(lsElement);
+      // Move the layer switcher into our combined panel
+      const ls = document.querySelector('.layer-switcher');
+      document.getElementById('layerSection').appendChild(ls);
 
-      // Toggle visibility of the entire panel
-      document.getElementById("toggle-layers").addEventListener("click", function() {
-        const sidePanel = document.getElementById("side-panel");
-        if (sidePanel.style.display === "none") {
-          sidePanel.style.display = "block";
+      // Toggle panel visibility
+      document.getElementById("toggle-panel").addEventListener("click", function() {
+        const panel = document.getElementById("info-panel");
+        if (panel.style.display === "none") {
+          panel.style.display = "block";
         } else {
-          sidePanel.style.display = "none";
+          panel.style.display = "none";
         }
       });
 
-      // Feature info display
+      // Feature info on click
       map.on("singleclick", function(evt) {
         const content = document.getElementById("attribute-content");
         content.innerHTML = "No feature clicked";
@@ -237,9 +238,9 @@
         });
       });
 
-      // Reset button placeholder
+      // Reset styling button
       document.getElementById("resetStyle").addEventListener("click", function() {
-        alert("Resetting styling (hook your function here)");
+        alert("Reset styling function here");
       });
     });
   </script>
